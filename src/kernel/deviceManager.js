@@ -110,8 +110,7 @@ export default function makeDeviceManager(
     kdebug(`  ^target is ${JSON.stringify(target)}`);
     const msg = {
       method,
-      body,
-      slots,
+      bodyAndSlots: { body, slots },
       kernelResolverID: undefined,
     };
     send(target, msg);

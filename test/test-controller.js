@@ -31,8 +31,7 @@ async function simpleCall(t, controller) {
       },
       msg: {
         method: 'foo',
-        body: 'args',
-        slots: [],
+        bodyAndSlots: { body: 'args', slots: [] },
       },
     },
   ]);
@@ -116,13 +115,15 @@ async function bootstrapExport(t, withSES) {
       },
       msg: {
         method: 'bootstrap',
-        body:
-          '{"args":[[],{"left":{"@qclass":"slot","index":0},"right":{"@qclass":"slot","index":1},"_bootstrap":{"@qclass":"slot","index":2}},{"_dummy":"dummy"}]}',
-        slots: [
-          { type: 'export', vatID: 'left', id: 0 },
-          { type: 'export', vatID: 'right', id: 0 },
-          { type: 'export', vatID: '_bootstrap', id: 0 },
-        ],
+        bodyAndSlots: {
+          body:
+            '{"args":[[],{"left":{"@qclass":"slot","index":0},"right":{"@qclass":"slot","index":1},"_bootstrap":{"@qclass":"slot","index":2}},{"_dummy":"dummy"}]}',
+          slots: [
+            { type: 'export', vatID: 'left', id: 0 },
+            { type: 'export', vatID: 'right', id: 0 },
+            { type: 'export', vatID: '_bootstrap', id: 0 },
+          ],
+        },
       },
     },
   ]);
@@ -156,8 +157,10 @@ async function bootstrapExport(t, withSES) {
       },
       msg: {
         method: 'foo',
-        body: '{"args":[1,{"@qclass":"slot","index":0}]}',
-        slots: [{ type: 'export', vatID: 'right', id: 0 }],
+        bodyAndSlots: {
+          body: '{"args":[1,{"@qclass":"slot","index":0}]}',
+          slots: [{ type: 'export', vatID: 'right', id: 0 }],
+        },
         kernelResolverID: 40,
       },
     },
@@ -190,8 +193,10 @@ async function bootstrapExport(t, withSES) {
       },
       msg: {
         method: 'bar',
-        body: '{"args":[2,{"@qclass":"slot","index":0}]}',
-        slots: [{ type: 'export', vatID: 'right', id: 0 }],
+        bodyAndSlots: {
+          body: '{"args":[2,{"@qclass":"slot","index":0}]}',
+          slots: [{ type: 'export', vatID: 'right', id: 0 }],
+        },
         kernelResolverID: 41,
       },
     },

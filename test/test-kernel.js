@@ -40,8 +40,7 @@ test('simple call', async t => {
       },
       msg: {
         method: 'foo',
-        body: 'args',
-        slots: [],
+        bodyAndSlots: { body: 'args', slots: [] },
         kernelResolverID: undefined,
       },
     },
@@ -95,11 +94,13 @@ test('map inbound', async t => {
       },
       msg: {
         method: 'foo',
-        body: 'args',
-        slots: [
-          { type: 'export', vatID: 'vat1', id: 5 },
-          { type: 'export', vatID: 'vat2', id: 6 },
-        ],
+        bodyAndSlots: {
+          body: 'args',
+          slots: [
+            { type: 'export', vatID: 'vat1', id: 5 },
+            { type: 'export', vatID: 'vat2', id: 6 },
+          ],
+        },
         kernelResolverID: undefined,
       },
     },
@@ -197,8 +198,7 @@ test('outbound call', async t => {
       },
       msg: {
         method: 'foo',
-        body: 'args',
-        slots: [],
+        bodyAndSlots: { body: 'args', slots: [] },
         kernelResolverID: undefined,
       },
     },
@@ -221,11 +221,13 @@ test('outbound call', async t => {
       },
       msg: {
         method: 'bar',
-        body: 'bargs',
-        slots: [
-          { type: 'export', vatID: 'vat2', id: 5 },
-          { type: 'export', vatID: 'vat1', id: 7 },
-        ],
+        bodyAndSlots: {
+          body: 'bargs',
+          slots: [
+            { type: 'export', vatID: 'vat2', id: 5 },
+            { type: 'export', vatID: 'vat1', id: 7 },
+          ],
+        },
         kernelResolverID: 40,
       },
     },
@@ -353,8 +355,10 @@ test('three-party', async t => {
       },
       msg: {
         method: 'intro',
-        body: 'bargs',
-        slots: [{ type: 'export', vatID: 'vatC', id: 6 }],
+        bodyAndSlots: {
+          body: 'bargs',
+          slots: [{ type: 'export', vatID: 'vatC', id: 6 }],
+        },
         kernelResolverID: 41,
       },
     },
@@ -503,8 +507,7 @@ test('transfer promise', async t => {
       },
       msg: {
         method: 'foo1',
-        body: 'args',
-        slots: [{ type: 'promise', id: 41 }],
+        bodyAndSlots: { body: 'args', slots: [{ type: 'promise', id: 41 }] },
         kernelResolverID: 42,
       },
     },

@@ -309,10 +309,14 @@ export default function buildKernel(kernelEndowments) {
         },
         msg: {
           method: `${method}`,
-          body: `${bodyAndSlots.body}`,
-          // queue() is exposed to the controller's realm, so we must translate
-          // each slot into a kernel-realm object/array
-          slots: Array.from(bodyAndSlots.slots.map(mapQueueSlotToKernelRealm)),
+          bodyAndSlots: {
+            body: `${bodyAndSlots.body}`,
+            // queue() is exposed to the controller's realm, so we must translate
+            // each slot into a kernel-realm object/array
+            slots: Array.from(
+              bodyAndSlots.slots.map(mapQueueSlotToKernelRealm),
+            ),
+          },
           kernelResolverID: undefined,
         },
       }),

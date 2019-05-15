@@ -310,8 +310,7 @@ export default function makeVatManager(vatID, syscallManager, setup, helpers) {
     const kernelPromiseID = createPromiseWithDecider(decider);
     const msg = {
       method,
-      body,
-      slots,
+      bodyAndSlots: { body, slots },
       kernelResolverID: kernelPromiseID,
     };
     send(target, msg);
@@ -589,12 +588,19 @@ export default function makeVatManager(vatID, syscallManager, setup, helpers) {
           `vatManager[${vatID}] given 'deliver' for ${target.vatID}`,
         );
       }
-      const inputSlots = msg.slots.map(slot => mapInbound(slot));
+      const inputSlots = msg.bodyAndSlots.slots.map(slot => mapInbound(slot));
       const resolverID =
         msg.kernelResolverID &&
         mapInbound({ type: 'resolver', id: msg.kernelResolverID }).id;
       return doProcess(
-        ['deliver', target.id, msg.method, msg.body, inputSlots, resolverID],
+        [
+          'deliver',
+          target.id,
+          msg.method,
+          msg.bodyAndSlots.body,
+          inputSlots,
+          resolverID,
+        ],
         `vat[${vatID}][${target.id}].${msg.method} dispatch failed`,
       );
     }
