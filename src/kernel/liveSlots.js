@@ -168,7 +168,7 @@ function build(syscall, _state, makeRoot, forVatID) {
     const done = makePromise();
     const ser = m.serialize(harden({ args }));
     lsdebug(`ls.qm send(${JSON.stringify(targetSlot)}, ${prop}`);
-    const promiseID = syscall.send(targetSlot, prop, ser.argsString, ser.slots);
+    const promiseID = syscall.send(targetSlot, prop, ser.body, ser.slots);
     lsdebug(` ls.qm got promiseID ${promiseID}`);
 
     // prepare for notifyFulfillToData/etc
@@ -306,7 +306,7 @@ function build(syscall, _state, makeRoot, forVatID) {
         }
         return (...args) => {
           const ser = m.serialize(harden({ args }));
-          const ret = syscall.callNow(slot, prop, ser.argsString, ser.slots);
+          const ret = syscall.callNow(slot, prop, ser.body, ser.slots);
           const retval = m.unserialize(ret.data, ret.slots);
           return retval;
         };
@@ -368,8 +368,8 @@ function build(syscall, _state, makeRoot, forVatID) {
       // presence, because then the kernel can deliver queued messages. We
       // could build a simpler way of doing this.
       const ser = m.serialize(res);
-      lsdebug(` ser ${ser.argsString} ${JSON.stringify(ser.slots)}`);
-      const unser = JSON.parse(ser.argsString);
+      lsdebug(` ser ${ser.body} ${JSON.stringify(ser.slots)}`);
+      const unser = JSON.parse(ser.body);
       if (
         typeof unser === 'object' &&
         QCLASS in unser &&
@@ -382,7 +382,7 @@ function build(syscall, _state, makeRoot, forVatID) {
       } else {
         // if it resolves to data, .thens fire but kernel-queued messages are
         // rejected, because you can't send messages to data
-        syscall.fulfillToData(resolverID, ser.argsString, ser.slots);
+        syscall.fulfillToData(resolverID, ser.body, ser.slots);
       }
     };
   }
@@ -392,7 +392,7 @@ function build(syscall, _state, makeRoot, forVatID) {
       harden(rej);
       lsdebug(`ls thenReject fired`, rej);
       const ser = m.serialize(rej);
-      syscall.reject(resolverID, ser.argsString, ser.slots);
+      syscall.reject(resolverID, ser.body, ser.slots);
     };
   }
 

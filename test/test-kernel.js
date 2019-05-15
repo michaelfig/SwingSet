@@ -15,9 +15,9 @@ test('simple call', async t => {
   const kernel = buildKernel({ setImmediate });
   const log = [];
   function setup1(syscall) {
-    function deliver(facetID, method, argsString, slots) {
-      log.push([facetID, method, argsString, slots]);
-      syscall.log(JSON.stringify({ facetID, method, argsString, slots }));
+    function deliver(facetID, method, body, slots) {
+      log.push([facetID, method, body, slots]);
+      syscall.log(JSON.stringify({ facetID, method, body, slots }));
     }
     return { deliver };
   }
@@ -40,7 +40,7 @@ test('simple call', async t => {
       },
       msg: {
         method: 'foo',
-        argsString: 'args',
+        body: 'args',
         slots: [],
         kernelResolverID: undefined,
       },
@@ -55,7 +55,7 @@ test('simple call', async t => {
   t.deepEqual(JSON.parse(data.log[0]), {
     facetID: 1,
     method: 'foo',
-    argsString: 'args',
+    body: 'args',
     slots: [],
   });
 
@@ -66,8 +66,8 @@ test('map inbound', async t => {
   const kernel = buildKernel({ setImmediate });
   const log = [];
   function setup1(_syscall) {
-    function deliver(facetID, method, argsString, slots) {
-      log.push([facetID, method, argsString, slots]);
+    function deliver(facetID, method, body, slots) {
+      log.push([facetID, method, body, slots]);
     }
     return { deliver };
   }
@@ -92,7 +92,7 @@ test('map inbound', async t => {
       },
       msg: {
         method: 'foo',
-        argsString: 'args',
+        body: 'args',
         slots: [
           { type: 'export', vatID: 'vat1', id: 5 },
           { type: 'export', vatID: 'vat2', id: 6 },
@@ -116,7 +116,7 @@ test('map inbound', async t => {
 test('addImport', t => {
   const kernel = buildKernel({ setImmediate });
   function setup(_syscall) {
-    function deliver(_facetID, _method, _argsString, _slots) {}
+    function deliver(_facetID, _method, _body, _slots) {}
     return { deliver };
   }
   kernel.addVat('vat1', setup);
@@ -140,9 +140,9 @@ test('outbound call', async t => {
   let v1tovat25;
 
   function setup1(syscall) {
-    function deliver(facetID, method, argsString, slots) {
+    function deliver(facetID, method, body, slots) {
       // console.log(`d1/${facetID} called`);
-      log.push(['d1', facetID, method, argsString, slots]);
+      log.push(['d1', facetID, method, body, slots]);
       const pid = syscall.send(
         { type: 'import', id: v1tovat25.id },
         'bar',
@@ -156,9 +156,9 @@ test('outbound call', async t => {
   kernel.addVat('vat1', setup1);
 
   function setup2(_syscall) {
-    function deliver(facetID, method, argsString, slots) {
+    function deliver(facetID, method, body, slots) {
       // console.log(`d2/${facetID} called`);
-      log.push(['d2', facetID, method, argsString, slots]);
+      log.push(['d2', facetID, method, body, slots]);
     }
     return { deliver };
   }
@@ -194,7 +194,7 @@ test('outbound call', async t => {
       },
       msg: {
         method: 'foo',
-        argsString: 'args',
+        body: 'args',
         slots: [],
         kernelResolverID: undefined,
       },
@@ -218,7 +218,7 @@ test('outbound call', async t => {
       },
       msg: {
         method: 'bar',
-        argsString: 'bargs',
+        body: 'bargs',
         slots: [
           { type: 'export', vatID: 'vat2', id: 5 },
           { type: 'export', vatID: 'vat1', id: 7 },
@@ -268,9 +268,9 @@ test('three-party', async t => {
   let carolForA;
 
   function setupA(syscall) {
-    function deliver(facetID, method, argsString, slots) {
+    function deliver(facetID, method, body, slots) {
       console.log(`vatA/${facetID} called`);
-      log.push(['vatA', facetID, method, argsString, slots]);
+      log.push(['vatA', facetID, method, body, slots]);
       const pid = syscall.send(
         { type: 'import', id: bobForA.id },
         'intro',
@@ -286,17 +286,17 @@ test('three-party', async t => {
   let bobSyscall;
   function setupB(syscall) {
     bobSyscall = syscall;
-    function deliver(facetID, method, argsString, slots) {
+    function deliver(facetID, method, body, slots) {
       console.log(`vatB/${facetID} called`);
-      log.push(['vatB', facetID, method, argsString, slots]);
+      log.push(['vatB', facetID, method, body, slots]);
     }
     return { deliver };
   }
   kernel.addVat('vatB', setupB);
 
   function setupC(_syscall) {
-    function deliver(facetID, method, argsString, slots) {
-      log.push(['vatC', facetID, method, argsString, slots]);
+    function deliver(facetID, method, body, slots) {
+      log.push(['vatC', facetID, method, body, slots]);
     }
     return { deliver };
   }
@@ -350,7 +350,7 @@ test('three-party', async t => {
       },
       msg: {
         method: 'intro',
-        argsString: 'bargs',
+        body: 'bargs',
         slots: [{ type: 'export', vatID: 'vatC', id: 6 }],
         kernelResolverID: 41,
       },
@@ -402,7 +402,7 @@ test('createPromise', t => {
   let syscall;
   function setup(s) {
     syscall = s;
-    function deliver(_facetID, _method, _argsString, _slots) {}
+    function deliver(_facetID, _method, _body, _slots) {}
     return { deliver };
   }
   kernel.addVat('vat1', setup);
@@ -433,8 +433,8 @@ test('transfer promise', async t => {
   const logA = [];
   function setupA(syscall) {
     syscallA = syscall;
-    function deliver(facetID, method, argsString, slots) {
-      logA.push([facetID, method, argsString, slots]);
+    function deliver(facetID, method, body, slots) {
+      logA.push([facetID, method, body, slots]);
     }
     return { deliver };
   }
@@ -444,8 +444,8 @@ test('transfer promise', async t => {
   const logB = [];
   function setupB(syscall) {
     syscallB = syscall;
-    function deliver(facetID, method, argsString, slots) {
-      logB.push([facetID, method, argsString, slots]);
+    function deliver(facetID, method, body, slots) {
+      logB.push([facetID, method, body, slots]);
     }
     return { deliver };
   }
@@ -500,7 +500,7 @@ test('transfer promise', async t => {
       },
       msg: {
         method: 'foo1',
-        argsString: 'args',
+        body: 'args',
         slots: [{ type: 'promise', id: 41 }],
         kernelResolverID: 42,
       },
@@ -719,8 +719,8 @@ test('subscribe to promise', async t => {
   const log = [];
   function setup(s) {
     syscall = s;
-    function deliver(facetID, method, argsString, slots) {
-      log.push(['deliver', facetID, method, argsString, slots]);
+    function deliver(facetID, method, body, slots) {
+      log.push(['deliver', facetID, method, body, slots]);
     }
     return { deliver };
   }
@@ -755,8 +755,8 @@ test.skip('promise redirection', t => {
   const log = [];
   function setup(s) {
     syscall = s;
-    function deliver(facetID, method, argsString, slots) {
-      log.push([facetID, method, argsString, slots]);
+    function deliver(facetID, method, body, slots) {
+      log.push([facetID, method, body, slots]);
     }
     return { deliver };
   }
@@ -815,8 +815,8 @@ test('promise resolveToData', async t => {
   const log = [];
   function setup(s) {
     syscall = s;
-    function deliver(facetID, method, argsString, slots) {
-      log.push(['deliver', facetID, method, argsString, slots]);
+    function deliver(facetID, method, body, slots) {
+      log.push(['deliver', facetID, method, body, slots]);
     }
     function notifyFulfillToData(promiseID, fulfillData, slots) {
       log.push(['notify', promiseID, fulfillData, slots]);
@@ -880,8 +880,8 @@ test('promise resolveToPresence', async t => {
   const log = [];
   function setup(s) {
     syscall = s;
-    function deliver(facetID, method, argsString, slots) {
-      log.push(['deliver', facetID, method, argsString, slots]);
+    function deliver(facetID, method, body, slots) {
+      log.push(['deliver', facetID, method, body, slots]);
     }
     function notifyFulfillToPresence(promiseID, slot) {
       log.push(['notify', promiseID, slot]);
@@ -945,8 +945,8 @@ test('promise reject', async t => {
   const log = [];
   function setup(s) {
     syscall = s;
-    function deliver(facetID, method, argsString, slots) {
-      log.push(['deliver', facetID, method, argsString, slots]);
+    function deliver(facetID, method, body, slots) {
+      log.push(['deliver', facetID, method, body, slots]);
     }
     function notifyReject(promiseID, rejectData, slots) {
       log.push(['notify', promiseID, rejectData, slots]);
@@ -1011,7 +1011,7 @@ test('transcript', async t => {
   const kernel = buildKernel({ setImmediate });
   const log = [];
   function setup(syscall, _state) {
-    function deliver(facetID, _method, _argsString, slots) {
+    function deliver(facetID, _method, _body, slots) {
       if (facetID === 1) {
         syscall.send(slots[1], 'foo', 'fooarg', []);
       }

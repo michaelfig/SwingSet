@@ -87,7 +87,7 @@ export default function makeDeviceManager(
   // syscall handlers: these are wrapped by the 'syscall' object and made
   // available to userspace
 
-  function doSendOnly(targetSlot, method, argsString, vatSlots) {
+  function doSendOnly(targetSlot, method, body, vatSlots) {
     if (targetSlot.type === undefined) {
       throw new Error(
         `targetSlot isn't really a slot ${JSON.stringify(targetSlot)}`,
@@ -110,7 +110,7 @@ export default function makeDeviceManager(
     kdebug(`  ^target is ${JSON.stringify(target)}`);
     const msg = {
       method,
-      argsString,
+      body,
       slots,
       kernelResolverID: undefined,
     };

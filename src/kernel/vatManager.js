@@ -278,7 +278,7 @@ export default function makeVatManager(vatID, syscallManager, setup, helpers) {
   // syscall handlers: these are wrapped by the 'syscall' object and made
   // available to userspace
 
-  function doSend(targetSlot, method, argsString, vatSlots) {
+  function doSend(targetSlot, method, body, vatSlots) {
     if (targetSlot.type === undefined) {
       throw new Error(
         `targetSlot isn't really a slot ${JSON.stringify(targetSlot)}`,
@@ -310,7 +310,7 @@ export default function makeVatManager(vatID, syscallManager, setup, helpers) {
     const kernelPromiseID = createPromiseWithDecider(decider);
     const msg = {
       method,
-      argsString,
+      body,
       slots,
       kernelResolverID: kernelPromiseID,
     };
@@ -475,7 +475,7 @@ export default function makeVatManager(vatID, syscallManager, setup, helpers) {
     reject(id, rejectData, slots);
   }
 
-  function doCallNow(target, method, argsString, argsSlots) {
+  function doCallNow(target, method, body, argsSlots) {
     const dev = mapOutbound(target);
     if (dev.type !== 'device') {
       throw new Error(
@@ -488,7 +488,7 @@ export default function makeVatManager(vatID, syscallManager, setup, helpers) {
         dev,
       )}).${method}`,
     );
-    const ret = invoke(dev, method, argsString, slots);
+    const ret = invoke(dev, method, body, slots);
     const retSlots = ret.slots.map(slot => mapInbound(slot));
     return harden({ data: ret.data, slots: retSlots });
   }
@@ -594,14 +594,7 @@ export default function makeVatManager(vatID, syscallManager, setup, helpers) {
         msg.kernelResolverID &&
         mapInbound({ type: 'resolver', id: msg.kernelResolverID }).id;
       return doProcess(
-        [
-          'deliver',
-          target.id,
-          msg.method,
-          msg.argsString,
-          inputSlots,
-          resolverID,
-        ],
+        ['deliver', target.id, msg.method, msg.body, inputSlots, resolverID],
         `vat[${vatID}][${target.id}].${msg.method} dispatch failed`,
       );
     }

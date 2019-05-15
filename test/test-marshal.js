@@ -13,27 +13,27 @@ test('serialize static data', t => {
     () => ser([1, 2]),
     /non-frozen objects like .* are disabled for now/,
   );
-  t.deepEqual(ser(harden([1, 2])), { argsString: '[1,2]', slots: [] });
-  t.deepEqual(ser(harden({ foo: 1 })), { argsString: '{"foo":1}', slots: [] });
-  t.deepEqual(ser(true), { argsString: 'true', slots: [] });
-  t.deepEqual(ser(1), { argsString: '1', slots: [] });
-  t.deepEqual(ser('abc'), { argsString: '"abc"', slots: [] });
+  t.deepEqual(ser(harden([1, 2])), { body: '[1,2]', slots: [] });
+  t.deepEqual(ser(harden({ foo: 1 })), { body: '{"foo":1}', slots: [] });
+  t.deepEqual(ser(true), { body: 'true', slots: [] });
+  t.deepEqual(ser(1), { body: '1', slots: [] });
+  t.deepEqual(ser('abc'), { body: '"abc"', slots: [] });
   t.deepEqual(ser(undefined), {
-    argsString: '{"@qclass":"undefined"}',
+    body: '{"@qclass":"undefined"}',
     slots: [],
   });
-  t.deepEqual(ser(-0), { argsString: '{"@qclass":"-0"}', slots: [] });
-  t.deepEqual(ser(NaN), { argsString: '{"@qclass":"NaN"}', slots: [] });
+  t.deepEqual(ser(-0), { body: '{"@qclass":"-0"}', slots: [] });
+  t.deepEqual(ser(NaN), { body: '{"@qclass":"NaN"}', slots: [] });
   t.deepEqual(ser(Infinity), {
-    argsString: '{"@qclass":"Infinity"}',
+    body: '{"@qclass":"Infinity"}',
     slots: [],
   });
   t.deepEqual(ser(-Infinity), {
-    argsString: '{"@qclass":"-Infinity"}',
+    body: '{"@qclass":"-Infinity"}',
     slots: [],
   });
   t.deepEqual(ser(Symbol.for('sym1')), {
-    argsString: '{"@qclass":"symbol","key":"sym1"}',
+    body: '{"@qclass":"symbol","key":"sym1"}',
     slots: [],
   });
   let bn;
@@ -46,7 +46,7 @@ test('serialize static data', t => {
   }
   if (bn) {
     t.deepEqual(ser(bn), {
-      argsString: '{"@qclass":"bigint","digits":"4"}',
+      body: '{"@qclass":"bigint","digits":"4"}',
       slots: [],
     });
   }
@@ -58,7 +58,7 @@ test('serialize static data', t => {
     em = harden(e);
   }
   t.deepEqual(ser(em), {
-    argsString: '{"@qclass":"error","name":"ReferenceError","message":"msg"}',
+    body: '{"@qclass":"error","name":"ReferenceError","message":"msg"}',
     slots: [],
   });
 
@@ -134,16 +134,16 @@ test('serialize exports', t => {
     },
   });
   t.deepEqual(ser(o1), {
-    argsString: '{"@qclass":"slot","index":0}',
+    body: '{"@qclass":"slot","index":0}',
     slots: [{ type: 'export', id: 1 }],
   });
   // m now remembers that o1 is exported as 1
   t.deepEqual(ser(harden([o1, o1])), {
-    argsString: '[{"@qclass":"slot","index":0},{"@qclass":"ibid","index":1}]',
+    body: '[{"@qclass":"slot","index":0},{"@qclass":"ibid","index":1}]',
     slots: [{ type: 'export', id: 1 }],
   });
   t.deepEqual(ser(harden([o2, o1])), {
-    argsString: '[{"@qclass":"slot","index":0},{"@qclass":"slot","index":1}]',
+    body: '[{"@qclass":"slot","index":0},{"@qclass":"slot","index":1}]',
     slots: [{ type: 'export', id: 2 }, { type: 'export', id: 1 }],
   });
 
@@ -194,7 +194,7 @@ test('serialize imports', t => {
     { type: 'import', id: 1 },
   ]);
   t.deepEqual(m.serialize(a), {
-    argsString: '{"@qclass":"slot","index":0}',
+    body: '{"@qclass":"slot","index":0}',
     slots: [{ type: 'import', id: 1 }],
   });
 
@@ -218,12 +218,12 @@ test('serialize promise', async t => {
   const { m } = makeMarshaller(syscall);
   const { p, res } = makePromise();
   t.deepEqual(m.serialize(p), {
-    argsString: '{"@qclass":"slot","index":0}',
+    body: '{"@qclass":"slot","index":0}',
     slots: [{ type: 'promise', id: 1 }],
   });
   // serializer should remember the promise
   t.deepEqual(m.serialize(harden(['other stuff', p])), {
-    argsString: '["other stuff",{"@qclass":"slot","index":0}]',
+    body: '["other stuff",{"@qclass":"slot","index":0}]',
     slots: [{ type: 'promise', id: 1 }],
   });
 

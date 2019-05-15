@@ -31,7 +31,7 @@ async function simpleCall(t, controller) {
       },
       msg: {
         method: 'foo',
-        argsString: 'args',
+        body: 'args',
         slots: [],
       },
     },
@@ -40,7 +40,7 @@ async function simpleCall(t, controller) {
   t.deepEqual(JSON.parse(controller.dump().log[0]), {
     facetID: 1,
     method: 'foo',
-    argsString: 'args',
+    body: 'args',
     slots: [],
   });
 
@@ -116,7 +116,7 @@ async function bootstrapExport(t, withSES) {
       },
       msg: {
         method: 'bootstrap',
-        argsString:
+        body:
           '{"args":[[],{"left":{"@qclass":"slot","index":0},"right":{"@qclass":"slot","index":1},"_bootstrap":{"@qclass":"slot","index":2}},{"_dummy":"dummy"}]}',
         slots: [
           { type: 'export', vatID: 'left', id: 0 },
@@ -156,7 +156,7 @@ async function bootstrapExport(t, withSES) {
       },
       msg: {
         method: 'foo',
-        argsString: '{"args":[1,{"@qclass":"slot","index":0}]}',
+        body: '{"args":[1,{"@qclass":"slot","index":0}]}',
         slots: [{ type: 'export', vatID: 'right', id: 0 }],
         kernelResolverID: 40,
       },
@@ -190,7 +190,7 @@ async function bootstrapExport(t, withSES) {
       },
       msg: {
         method: 'bar',
-        argsString: '{"args":[2,{"@qclass":"slot","index":0}]}',
+        body: '{"args":[2,{"@qclass":"slot","index":0}]}',
         slots: [{ type: 'export', vatID: 'right', id: 0 }],
         kernelResolverID: 41,
       },

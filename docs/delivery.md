@@ -123,18 +123,18 @@ A has a proxy named `bob` which remembers `slot=-10a`, and `carol` with
 
 A invokes `bob.foo()` to B, no arguments, no result promise.
 
-A does `syscall.send(targetSlot=-10a, method='foo', argsString='[]', slots=[])`.
+A does `syscall.send(targetSlot=-10a, method='foo', body='[]', slots=[])`.
 
-That uncurries to `baseSend(fromVatID=A, targetSlot=-10a, method='foo', argsString='[]', slots=[])`.
+That uncurries to `baseSend(fromVatID=A, targetSlot=-10a, method='foo', body='[]', slots=[])`.
 
 Kernel translates target slot (`[A, -10a]`) into `[B, 40b]`. No argument
 slots to translate.
 
-Kernel queues message `{ vatID=B, slotID=40b, method='foo', argsString='[]', vatSlots=[] }`.
+Kernel queues message `{ vatID=B, slotID=40b, method='foo', body='[]', vatSlots=[] }`.
 
 Message gets to front of queue, kernel dispatches it.
 
-Kernel invokes `B.deliver(slotID=40b, method='foo', argsString='[]', argSlots=[])`.
+Kernel invokes `B.deliver(slotID=40b, method='foo', body='[]', argSlots=[])`.
 
 All slot tables remain the same.
 
@@ -174,14 +174,14 @@ A does:
 ```
 syscall.send(targetSlot=-10a,
              method='foo',
-             argsString='[{@qclass: "ref", index: 0i},
-                          {@qclass: "ref", index: 1i},
-                         ]',
+             body='[{@qclass: "ref", index: 0i},
+                    {@qclass: "ref", index: 1i},
+                   ]',
              argSlots=[20a, -10a])
 ```
 
 Kernel translates target slot (`[A, -10a]`) into `[B, 40b]`. It leaves
-`argsString` alone (the kernel never tries to parse that string). But it
+`body` alone (the kernel never tries to parse that string). But it
 walks `argSlots` to translate the A-output values into B-input ones.
 
 The first slot ("20a") is positive, so it is an export, and thus does not
@@ -212,9 +212,9 @@ The kernel then queues a message:
 { vatID=B,
   slotID=40b,
   method='foo',
-  argsString='[{@qclass: "ref", index: 0i},
-               {@qclass: "ref", index: 1i},
-              ]',
+  body='[{@qclass: "ref", index: 0i},
+         {@qclass: "ref", index: 1i},
+        ]',
   argSlots=[-30b, 40b])
 }
 ```
@@ -225,19 +225,19 @@ When this message gets to the front of the queue, the kernel invokes:
 B.deliver(
   slotID=40b,
   method='foo',
-  argsString='[{@qclass: "ref", index: 0i},
-               {@qclass: "ref", index: 1i},
-              ]',
+  body='[{@qclass: "ref", index: 0i},
+         {@qclass: "ref", index: 1i},
+        ]',
   argSlots=[-30b, 40b])
 }
 ```
 
-B's comms library deserializes argsStrings, replacing "refs" with other
-objects. The first one encountered looks up `index=0` in `argSlots` and sees
-"-30b", which is negative, so it is an import. This is not yet present in B's
-table (`!vatSlotsB.has(-30b)`), so a new proxy is created (which remembers
-"-30b" internally), and this proxy is inserted into the slowly-forming
-argument graph.
+B's comms library deserializes bodys, replacing "refs" with other objects.
+The first one encountered looks up `index=0` in `argSlots` and sees "-30b",
+which is negative, so it is an import. This is not yet present in B's table
+(`!vatSlotsB.has(-30b)`), so a new proxy is created (which remembers "-30b"
+internally), and this proxy is inserted into the slowly-forming argument
+graph.
 
 The second `ref` encountered cites `index=1`, which maps to "40b". This is
 positive, so it must be a previously-exported object. This object (i.e.
@@ -262,9 +262,9 @@ present in `kernelSlots[B].backward`, so it can translate that to `-30b`
 without modifying the table. B's comms library sees that `-30b` is already
 present in `vatSlotsB` so it re-uses `proxyAlice` from the previous delivery.
 
-If A were to invoke `bob.foo(alice, alice)`, the `argsString` would have
-multiple copies of a `{@qclass: "ref", index: 0i}` node, but `argsSlots`
-would have just one copy of `-30b`.
+If A were to invoke `bob.foo(alice, alice)`, the `body` would have multiple
+copies of a `{@qclass: "ref", index: 0i}` node, but `argsSlots` would have
+just one copy of `-30b`.
 
 
 ## Third Message: Three-Party Introduction
@@ -277,9 +277,9 @@ reference to carol ("-11a") in the arguments:
 ```
 syscall.send(targetSlot=-10a,
              method='bar,
-             argsString='[{@qclass: "ref", index: 0i},
-                          {@qclass: "ref", index: 1i},
-                         ]',
+             body='[{@qclass: "ref", index: 0i},
+                    {@qclass: "ref", index: 1i},
+                   ]',
              argSlots=[-11a])
 ```
 
@@ -308,7 +308,7 @@ The kernel then queues:
 { vatID=B,
   slotID=40b,
   method='bar',
-  argsString='[{@qclass: "ref", index: 0i}]',
+  body='[{@qclass: "ref", index: 0i}]',
   argSlots=[-31b])
 }
 ```
@@ -319,7 +319,7 @@ When this message gets to the front of the queue, the kernel invokes:
 B.deliver(
   slotID=40b,
   method='bar',
-  argsString='[{@qclass: "ref", index: 0i}]',
+  body='[{@qclass: "ref", index: 0i}]',
   argSlots=[-31b])
 }
 ```

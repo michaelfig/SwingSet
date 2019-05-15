@@ -295,7 +295,7 @@ export default function buildKernel(kernelEndowments) {
     throw Error(`unrecognized type '${s.type}'`);
   }
 
-  function queueToExport(vatID, facetID, method, argsString, slots = []) {
+  function queueToExport(vatID, facetID, method, body, slots = []) {
     // queue a message on the end of the queue, with 'absolute' slots. Use
     // 'step' or 'run' to execute it
     runQueue.push(
@@ -309,7 +309,7 @@ export default function buildKernel(kernelEndowments) {
         },
         msg: {
           method: `${method}`,
-          argsString: `${argsString}`,
+          body: `${body}`,
           // queue() is exposed to the controller's realm, so we must translate
           // each slot into a kernel-realm object/array
           slots: Array.from(slots.map(mapQueueSlotToKernelRealm)),
@@ -393,7 +393,7 @@ export default function buildKernel(kernelEndowments) {
     const m = makeMarshal(serializeSlot);
     const s = m.serialize(harden({ args: [argv, vatObj0s, deviceObj0s] }));
     // queueToExport() takes 'neutral' { type: export, vatID, slotID } objects in s.slots
-    queueToExport(vatID, 0, 'bootstrap', s.argsString, s.slots);
+    queueToExport(vatID, 0, 'bootstrap', s.body, s.slots);
   }
 
   function dump() {

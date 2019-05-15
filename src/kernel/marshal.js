@@ -220,7 +220,7 @@ export function makeMarshal(serializeSlot, unserializeSlot) {
     const slots = [];
     const slotMap = new Map(); // maps val (proxy or presence) to index of slots[]
     return {
-      argsString: JSON.stringify(val, makeReplacer(slots, slotMap)),
+      body: JSON.stringify(val, makeReplacer(slots, slotMap)),
       slots,
     };
   }

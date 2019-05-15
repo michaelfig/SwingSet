@@ -48,7 +48,7 @@ use `dispatch.queue` instead of `dispatch.deliver` to make it clear. We'll
 need to do this with the comms vat, which might get `dispatch.deliver` for
 inbound network messages and `dispatch.queue` for everything from other vats.
 
-* syscall.send(exportID, methodName, argsString, slots) -> resultPromiseID
+* syscall.send(exportID, methodName, body, slots) -> resultPromiseID
 
   "hey kernel, please send a message to this target (one of your local
   pass-by-presence). I'm going to create a local promise to manage the
@@ -67,7 +67,7 @@ inbound network messages and `dispatch.queue` for everything from other vats.
   kernel-promise that I can cite."
 
   
-* dispatch.deliver(target, methodName, argsString, slots, resolverID)
+* dispatch.deliver(target, methodName, body, slots, resolverID)
   target is {type: export, id} or {type: resolver, id}
 
   "hey vat, I'm sending a message to one of your exports, or to be queued for
@@ -221,9 +221,9 @@ shorten the paths. As a result, there's no need for a
 
 ## Or...
 
-* syscall.send(targetImportID, methodName, argsString, slots) -> resultImportID
+* syscall.send(targetImportID, methodName, body, slots) -> resultImportID
 * syscall.registerPromise(exportID) -> resolverImportID
-* dispatch.deliver(facetExportID, methodName, argsString, slots, resolverImportID)
+* dispatch.deliver(facetExportID, methodName, body, slots, resolverImportID)
 * syscall.notifyRedirect(resolverImportID, targetImport/ExportID)
 * syscall.notifyFulfill(resolverImportID, resultString, slots)
 * syscall.notifyReject(resolverImportID, resultString, slots)

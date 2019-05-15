@@ -128,7 +128,7 @@ function build(syscall, makeRoot, forDeviceName) {
         }
         const p = (...args) => {
           const ser = m.serialize(harden({ args }));
-          syscall.sendOnly(importSlot, prop, ser.argsString, ser.slots);
+          syscall.sendOnly(importSlot, prop, ser.body, ser.slots);
         };
         return p;
       },
@@ -179,8 +179,8 @@ function build(syscall, makeRoot, forDeviceName) {
     }
     const res = t[method](...args.args);
     const ser = m.serialize(res);
-    lsdebug(` ser ${ser.argsString} ${JSON.stringify(ser.slots)}`);
-    return harden({ data: ser.argsString, slots: ser.slots });
+    lsdebug(` ser ${ser.body} ${JSON.stringify(ser.slots)}`);
+    return harden({ data: ser.body, slots: ser.slots });
   }
 
   const rootObject = makeRoot(SO);

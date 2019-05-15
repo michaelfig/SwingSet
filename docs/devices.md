@@ -131,8 +131,8 @@ Devices are very much like Vats: the attenuator function is invoked with a
 return a `dispatch` object with which the kernel can invoke the device. The
 specific methods on `syscall` and `dispatch` are different for devices:
 
-* `syscall.sendOnly(targetSlot, method, argsString, argsSlots) -> undefined`
-* `dispatch.invoke(target, method, argsString, argsSlots) -> { args, slots }`
+* `syscall.sendOnly(targetSlot, method, body, argsSlots) -> undefined`
+* `dispatch.invoke(target, method, body, argsSlots) -> { args, slots }`
 * `dispatch.getState() -> { STATE }`
 * `dispatch.setState(STATE)`
 
@@ -140,8 +140,8 @@ specific methods on `syscall` and `dispatch` are different for devices:
 
 This feature adds two API calls to Vats:
 
-* `syscall.sendOnly(targetSlot, method, argsString, argsSlots) -> undefined`
-* `syscall.callNow(deviceSlot, method, argsString, argsSlots) -> { args, slots }`
+* `syscall.sendOnly(targetSlot, method, body, argsSlots) -> undefined`
+* `syscall.callNow(deviceSlot, method, body, argsSlots) -> { args, slots }`
 
 (although `sendOnly` is not used to interact with devices, and is only added
 for completeness)
