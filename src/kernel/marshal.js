@@ -296,8 +296,14 @@ export function makeMarshal(serializeSlot, unserializeSlot) {
     };
   }
 
-  function unserialize(str, slots) {
-    return JSON.parse(str, makeReviver(slots));
+  function unserialize(bodyAndSlots) {
+    if (!bodyAndSlots.body) {
+      throw new Error(
+        `unserialize: missing body, got ${JSON.stringify(bodyAndSlots)}`,
+      );
+    }
+    const { body, slots } = bodyAndSlots;
+    return JSON.parse(body, makeReviver(slots));
   }
 
   return harden({

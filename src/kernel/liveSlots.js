@@ -307,7 +307,7 @@ function build(syscall, _state, makeRoot, forVatID) {
         return (...args) => {
           const ser = m.serialize(harden({ args }));
           const ret = syscall.callNow(slot, prop, ser.body, ser.slots);
-          const retval = m.unserialize(ret.data, ret.slots);
+          const retval = m.unserialize({ body: ret.data, slots: ret.slots });
           return retval;
         };
       },
@@ -334,7 +334,7 @@ function build(syscall, _state, makeRoot, forVatID) {
       `ls[${forVatID}].dispatch.deliver ${facetid}.${method} -> ${resolverID}`,
     );
     const t = getTarget(facetid);
-    const args = m.unserialize(argsbytes, caps);
+    const args = m.unserialize({ body: argsbytes, slots: caps });
     const p = Promise.resolve().then(_ => {
       if (!(method in t)) {
         throw new TypeError(
@@ -411,7 +411,7 @@ function build(syscall, _state, makeRoot, forVatID) {
     if (!importedPromisesByPromiseID.has(promiseID)) {
       throw new Error(`unknown promiseID '${promiseID}'`);
     }
-    const val = m.unserialize(data, slots);
+    const val = m.unserialize({ body: data, slots });
     importedPromisesByPromiseID.get(promiseID).res(val);
   }
 
@@ -429,7 +429,7 @@ function build(syscall, _state, makeRoot, forVatID) {
     if (!importedPromisesByPromiseID.has(promiseID)) {
       throw new Error(`unknown promiseID '${promiseID}'`);
     }
-    const val = m.unserialize(data, slots);
+    const val = m.unserialize({ body: data, slots });
     importedPromisesByPromiseID.get(promiseID).rej(val);
   }
 

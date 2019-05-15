@@ -67,7 +67,7 @@ test('serialize static data', t => {
 
 test('unserialize static data', t => {
   const m = makeMarshal();
-  const uns = val => m.unserialize(val, []);
+  const uns = val => m.unserialize({ body: val, slots: [] });
   t.equal(uns('1'), 1);
   t.equal(uns('"abc"'), 'abc');
   t.equal(uns('false'), false);
@@ -152,25 +152,26 @@ test('serialize exports', t => {
 
 test('deserialize imports', t => {
   const { m } = makeMarshaller();
-  const a = m.unserialize('{"@qclass":"slot","index":0}', [
-    { type: 'import', id: 1 },
-  ]);
+  const a = m.unserialize({
+    body: '{"@qclass":"slot","index":0}',
+    slots: [{ type: 'import', id: 1 }],
+  });
   // a should be a proxy/presence. For now these are obvious.
   t.ok('_importID_1' in a);
   t.ok(Object.isFrozen(a));
 
   // m now remembers the proxy
-  const b = m.unserialize('{"@qclass":"slot","index":0}', [
-    { type: 'import', id: 1 },
-  ]);
+  const b = m.unserialize({
+    body: '{"@qclass":"slot","index":0}',
+    slots: [{ type: 'import', id: 1 }],
+  });
   t.is(a, b);
 
   // the slotid is what matters, not the index
-  const c = m.unserialize('{"@qclass":"slot","index":2}', [
-    'x',
-    'x',
-    { type: 'import', id: 1 },
-  ]);
+  const c = m.unserialize({
+    body: '{"@qclass":"slot","index":2}',
+    slots: ['x', 'x', { type: 'import', id: 1 }],
+  });
   t.is(a, c);
 
   t.end();
@@ -180,9 +181,10 @@ test('deserialize exports', t => {
   const { m } = makeMarshaller();
   const o1 = harden({});
   m.serialize(o1); // allocates slot=1
-  const a = m.unserialize('{"@qclass":"slot","index":0}', [
-    { type: 'export', id: 1 },
-  ]);
+  const a = m.unserialize({
+    body: '{"@qclass":"slot","index":0}',
+    slots: [{ type: 'export', id: 1 }],
+  });
   t.is(a, o1);
 
   t.end();
@@ -190,9 +192,10 @@ test('deserialize exports', t => {
 
 test('serialize imports', t => {
   const { m } = makeMarshaller();
-  const a = m.unserialize('{"@qclass":"slot","index":0}', [
-    { type: 'import', id: 1 },
-  ]);
+  const a = m.unserialize({
+    body: '{"@qclass":"slot","index":0}',
+    slots: [{ type: 'import', id: 1 }],
+  });
   t.deepEqual(m.serialize(a), {
     body: '{"@qclass":"slot","index":0}',
     slots: [{ type: 'import', id: 1 }],
@@ -229,7 +232,10 @@ test('serialize promise', async t => {
 
   // inbound should recognize it and return the promise
   t.deepEqual(
-    m.unserialize('{"@qclass":"slot","index":0}', [{ type: 'promise', id: 1 }]),
+    m.unserialize({
+      body: '{"@qclass":"slot","index":0}',
+      slots: [{ type: 'promise', id: 1 }],
+    }),
     p,
   );
 
@@ -253,9 +259,10 @@ test('unserialize promise', t => {
   };
 
   const { m } = makeMarshaller(syscall);
-  const p = m.unserialize('{"@qclass":"slot","index":0}', [
-    { type: 'promise', id: 1 },
-  ]);
+  const p = m.unserialize({
+    body: '{"@qclass":"slot","index":0}',
+    slots: [{ type: 'promise', id: 1 }],
+  });
   t.deepEqual(log, ['subscribe-1']);
   t.ok(p instanceof Promise);
 

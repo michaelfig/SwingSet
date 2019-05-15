@@ -162,7 +162,7 @@ function build(syscall, makeRoot, forDeviceName) {
   function invoke(deviceID, method, data, slots) {
     lsdebug(`ls[${forDeviceName}].dispatch.invoke ${deviceID}.${method}`);
     const t = getTarget(deviceID);
-    const args = m.unserialize(data, slots);
+    const args = m.unserialize({ body: data, slots });
     if (!(method in t)) {
       throw new TypeError(
         `target[${method}] does not exist, has ${Object.getOwnPropertyNames(
