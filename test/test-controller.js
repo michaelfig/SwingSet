@@ -19,7 +19,7 @@ async function simpleCall(t, controller) {
   t.deepEqual(data.vatTables, [{ vatID: 'vat1', state: { transcript: [] } }]);
   t.deepEqual(data.kernelTable, []);
 
-  controller.queueToExport('vat1', 1, 'foo', 'args');
+  controller.queueToExport('vat1', 1, 'foo', { body: 'args', slots: [] });
   t.deepEqual(controller.dump().runQueue, [
     {
       vatID: 'vat1',

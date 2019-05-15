@@ -55,7 +55,7 @@ async function test1(t, withSES) {
   };
   const c = await buildVatController(config, withSES);
   await c.step();
-  c.queueToExport('_bootstrap', 0, 'step1', '{"args":[]}');
+  c.queueToExport('_bootstrap', 0, 'step1', { body: '{"args":[]}', slots: [] });
   await c.step();
   console.log(c.dump().log);
   t.deepEqual(c.dump().log, [

@@ -164,8 +164,8 @@ export async function buildVatController(config, withSES = true, argv = []) {
       await kernel.step();
     },
 
-    queueToExport(vatID, facetID, method, body) {
-      kernel.queueToExport(vatID, facetID, method, body, []);
+    queueToExport(vatID, facetID, method, bodyAndSlots) {
+      kernel.queueToExport(vatID, facetID, method, bodyAndSlots);
     },
 
     callBootstrap(vatID, bootstrapArgv) {

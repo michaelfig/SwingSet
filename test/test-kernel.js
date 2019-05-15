@@ -28,7 +28,7 @@ test('simple call', async t => {
   t.deepEqual(data.log, []);
   t.deepEqual(log, []);
 
-  kernel.queueToExport('vat1', 1, 'foo', 'args');
+  kernel.queueToExport('vat1', 1, 'foo', { body: 'args', slots: [] });
   t.deepEqual(kernel.dump().runQueue, [
     {
       vatID: 'vat1',
@@ -77,10 +77,13 @@ test('map inbound', async t => {
   t.deepEqual(data.kernelTable, []);
   t.deepEqual(log, []);
 
-  kernel.queueToExport('vat1', 1, 'foo', 'args', [
-    { type: 'export', vatID: 'vat1', id: 5 },
-    { type: 'export', vatID: 'vat2', id: 6 },
-  ]);
+  kernel.queueToExport('vat1', 1, 'foo', {
+    body: 'args',
+    slots: [
+      { type: 'export', vatID: 'vat1', id: 5 },
+      { type: 'export', vatID: 'vat2', id: 6 },
+    ],
+  });
   t.deepEqual(kernel.dump().runQueue, [
     {
       vatID: 'vat1',
@@ -181,7 +184,7 @@ test('outbound call', async t => {
   ]);
   t.deepEqual(log, []);
 
-  kernel.queueToExport('vat1', 1, 'foo', 'args');
+  kernel.queueToExport('vat1', 1, 'foo', { body: 'args', slots: [] });
   t.deepEqual(log, []);
   t.deepEqual(kernel.dump().runQueue, [
     {
@@ -332,7 +335,7 @@ test('three-party', async t => {
   ]);
   t.deepEqual(log, []);
 
-  kernel.queueToExport('vatA', 1, 'foo', 'args');
+  kernel.queueToExport('vatA', 1, 'foo', { body: 'args', slots: [] });
   await kernel.step();
 
   t.deepEqual(log.shift(), ['vatA', 1, 'foo', 'args', []]);
@@ -1019,10 +1022,13 @@ test('transcript', async t => {
     return { deliver };
   }
   kernel.addVat('vatA', setup);
-  kernel.queueToExport('vatA', 1, 'store', 'args string', [
-    { type: 'export', vatID: 'vatA', id: 1 },
-    { type: 'export', vatID: 'vatB', id: 2 },
-  ]);
+  kernel.queueToExport('vatA', 1, 'store', {
+    body: 'args string',
+    slots: [
+      { type: 'export', vatID: 'vatA', id: 1 },
+      { type: 'export', vatID: 'vatB', id: 2 },
+    ],
+  });
   await kernel.step();
 
   // the transcript records vat-specific import/export slots, so figure out
